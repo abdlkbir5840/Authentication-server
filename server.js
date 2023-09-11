@@ -36,7 +36,7 @@ app.all("*", (req, res) => {
       .send("The request is not valid or the router is not found!!");
   }
 });
-
+console.log("test le deployement 1");
 prisma
   .$connect()
   .then(() => {
@@ -49,3 +49,5 @@ prisma
   .catch((error) => {
     console.error("Database connection error:", error);
   });
+
+  console.log("test le deployement 2");

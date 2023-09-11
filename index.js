@@ -1,14 +1,14 @@
 require("dotenv").config();
 const path = require("path");
-const prisma = require("./src/db/prisma");
+const prisma = require("./db/prisma");
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const corsOptions = require("./src/config/corsOptions");
-const router = require("./src/routes/routes");
-const errorHandler = require("./src/middlewares/errorHandler");
+const corsOptions = require("./config/corsOptions");
+const router = require("./routes/routes");
+const errorHandler = require("./middlewares/errorHandler");
 const port = process.env.PORT || 5001;
 
 app.use(cors(corsOptions));
@@ -17,14 +17,14 @@ app.use(express.json());
 app.use(morgan("combined"))
 app.use("/", express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "src", "views", "index.html"));
+  res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 app.use("/api/v1", router);
 app.use(errorHandler)
 app.all("*", (req, res) => {
   res.status(404);
   if (req.accepts("html")) {
-    res.sendFile(path.join(__dirname, "src", "views", "404.html"));
+    res.sendFile(path.join(__dirname, "views", "404.html"));
   } else if (req.accepts("json")) {
     res.json({
       title: "Request Error",

@@ -4,11 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node index.js",
+    "dev": "nodemon index"
   },
   "keywords": [],
   "author": "",
+  "engines": {
+    "node": "18.15.0"
+  },
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.2.0",

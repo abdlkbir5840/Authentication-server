@@ -1,0 +1,9 @@
+-- AlterTable
+
+ALTER TABLE "User"
+ADD
+    COLUMN "created_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+ADD
+    COLUMN "deleted_at" TIMESTAMPTZ,
+ADD
+    COLUMN "updated_at" TIMESTAMPTZ;

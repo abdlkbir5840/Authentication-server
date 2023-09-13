@@ -12,9 +12,6 @@ const findAll = async () => {
         deleted_at: true,
       }
     });
-    if(!users.length){
-      return {message: 'No user found'}
-    }
     return users;
   };
 

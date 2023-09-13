@@ -6,6 +6,8 @@ const {
 } = require("../services/auth.service");
 
 const register = async (req, res, next) => {
+  console.log('ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+  console.log(req.body)
   try {
     const { accessToken, refreshToken, name, email } = await registerUser(
       req.body

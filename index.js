@@ -9,18 +9,26 @@ const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const router = require("./routes/routes");
 const errorHandler = require("./middlewares/errorHandler");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require('yamljs');
+const swaggerJSDoc = YAML.load('./docs/api.yaml');
 const port = process.env.PORT || 5001;
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
-app.use(morgan("combined"))
+app.use(morgan("combined"));
 app.use("/", express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });
+app.use('/docs', (req, res)=>{
+  res.send(swaggerJSDoc);
+})
 app.use("/api/v1", router);
-app.use(errorHandler)
+app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc))
+
+app.use(errorHandler);
 app.all("*", (req, res) => {
   res.status(404);
   if (req.accepts("html")) {
@@ -40,7 +48,6 @@ prisma
   .$connect()
   .then(() => {
     console.log("Database connected");
-    // Démarrer le serveur une fois la connexion établie
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });

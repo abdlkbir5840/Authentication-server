@@ -143,7 +143,7 @@ const refreshUser = async (cookie) => {
 
 const logoutUser = async (cookie) => {
   if(!cookie?.jwt){
-    throw new CustomError('', 204)
+    throw new CustomError('Unauthorized', 401)
   }
 }
 module.exports = { registerUser, loginUser, refreshUser, logoutUser };

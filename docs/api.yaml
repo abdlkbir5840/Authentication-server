@@ -1,0 +1,399 @@
+openapi: "3.1.0"
+info:
+  title: Authentication Rest Api
+  description: This is the documentation for authentication rest api
+  version: 1.0.0
+  contact:
+    name: Abdelkabir EL BAHMADI
+    email: abdelkabir.elbhmadi@gmail.com
+  license:
+    name: Apache 2.0
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+  - url: "http://localhost:8080/api/v1"
+    description: This is my local server
+
+tags:
+  - name: Authentication
+    description: Endpoints related to user authentication.
+  - name: Users
+    description: Endpoints related to users management.
+
+
+schemes:
+  - https
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a New User
+      description: |
+          Register a new user in the system. This endpoint allows users to create a new account by providing their registration details.
+          Please note that upon successful registration, a refresh token will be stored in a cookie named "jwt" for future authentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The user's name.
+                email:
+                  type: string
+                  format: email
+                  description: The user's email address.
+                password:
+                  type: string
+                  description: The user's password.
+              required:
+                - name
+                - email
+                - password
+            example:
+              name: "abdelkabir EL BAHMADI"
+              email: "abdelkabir.elbahmadi@example.com"
+              password: "12345678"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: The access token for the authenticated user.
+                  name:
+                    type: string
+                    description: The user's name.
+                  email:
+                    type: string
+                    description: The user's email address.
+                example:
+                  accessToken: "YOUR_ACCESS_TOKEN_HERE"
+                  name: "abdelkabir"
+                  email: "abdelkabr@gmail.com"
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message: 
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the validation error occurred.
+                example:
+                  title: Validation Error
+                  message: All fields are mandatory
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '409':
+          description: Conflict Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message: 
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the conflict error occurred.
+                example:
+                  title: Conflict Error
+                  message: User already exists
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '500':
+          description: Internal Server Error
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login User
+      description: |
+        Authenticate a user by providing their credentials. This endpoint allows users to log in and receive an access token for authentication.
+        Please note that upon successful registration, a refresh token will be stored in a cookie named "jwt" for future authentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: user email
+                password:
+                  type: string
+                  description: user password
+              required:
+                - email
+                - password
+            example:
+              email: abdelkabir.elbhmadi@gmail.com
+              password: "12345678"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: The access token for the authenticated user.
+                  name: 
+                    type: string
+                    description: The user's name
+                  email:
+                    type: string
+                    description: The user's email
+                example:
+                  accessToken: "YOUR_ACCESS_TOKEN_HERE"
+                  name: "abdelkabir"
+                  email: "abdelkabr@gmail.com"
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message: 
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the validation error occurred.
+                example:
+                  title: Validation Error
+                  message: All fields are mandatory
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '401':
+          description: Unauhtorized Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message: 
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the validation error occurred.
+                example:
+                  title: Unauhtorized Error
+                  message: Credential not valid OR Authentication failed
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '500':
+          description: Internal Server Error
+  /auth/refresh:
+    get:
+      tags:
+        - Authentication
+      summary: Refresh Access Token
+      description: |
+        Refresh the access token by providing a refresh token. This endpoint allows users to refresh their access token for continued authentication.
+        The refresh token should be stored in a cookie named "jwt" for future authentication.
+      parameters:
+        - in: cookie
+          name: jwt
+          schema:
+            type: string
+          required: true
+          description: Refresh token stored in a cookie.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: The new access token for the authenticated user.
+              example:
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJpZCI6Mn0sImlhdCI6MTY5NDU1NjI1NywiZXhwIjoxNjk0NTU2MzE3fQ."
+        '401':
+          description: Unauthorized Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message:
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the validation error occurred.
+                example:
+                  title: Unauthorized Error
+                  message: Expired token OR Invalid token OR User not found
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '500':
+          description: Internal Server Error
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout User
+      description: |
+        Log out a user by clearing their authentication token (JWT) stored in the cookie.
+      parameters:
+        - in: cookie
+          name: jwt
+          schema:
+            type: string
+          description: The JWT token stored in a cookie.
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Logout successful message.
+                example:
+                  message: "Logout success"
+        '401':
+          description: Unauthorized Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message:
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the error occurred.
+                example:
+                  title: Unauthorized Error
+                  message: Unauthorized access
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '500':
+          description: Internal Server Error
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Retrieve a List of Users
+      description: Retrieve a list of users from the system.
+      parameters:
+        - in: headers
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: Bearer token for authentication.
+          example: Bearer YOUR_AUTH_TOKEN_HERE
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The user's ID.
+                    name:
+                      type: string
+                      description: The user's name.
+                    email:
+                      type: string
+                      description: The user's email address.
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: The date and time when the user was created.
+                    updated_at:
+                      type: string
+                      format: date-time
+                      description: The date and time when the user was last updated.
+                    deleted_at:
+                      type: string
+                      format: date-time
+                      description: The date and time when the user was deleted (if applicable).
+                example:
+                  - id: 1
+                    name: John Doe
+                    email: john.doe@example.com
+                    created_at: "2023-09-12T12:00:00.000Z"
+                    updated_at: "2023-09-12T12:30:00.000Z"
+                    deleted_at: null
+                  - id: 2
+                    name: Jane Smith
+                    email: jane.smith@example.com
+                    created_at: "2023-09-12T13:00:00.000Z"
+                    updated_at: "2023-09-12T13:30:00.000Z"
+                    deleted_at: null
+        '401':
+          description: Unauthorized Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Error Title
+                  message:
+                    type: string
+                    description: Error message
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: The timestamp indicating when the error occurred.
+                example:
+                  title: Unauthorized Error
+                  message: Unauthorized access
+                  timestamp: "2023-09-12T12:00:00.000Z"
+        '500':
+          description: Internal Server Error
